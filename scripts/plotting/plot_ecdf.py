@@ -1,9 +1,11 @@
 from argparse import ArgumentParser
 from pathlib import Path
 from matplotlib import pyplot as plt
+from scipy.stats import norm
 import pandas as pd
 import numpy as np
-from scipy.stats import norm
+
+from sidecar.stats.cdf import *
 
 
 def plot_dist(df: pd.DataFrame, *columns, image_path=None):
@@ -14,17 +16,15 @@ def plot_dist(df: pd.DataFrame, *columns, image_path=None):
 
     ticker = df['ticker'].values[0]
     start_date, end_date = min(df['date']), max(df['date'])
+
     for label, ax in zip(columns, axes):
         y = np.log(df[label].to_numpy())
+        x = x_steps(y, 100)
 
-        start, stop, num_steps = min(y), max(y), 100
-        x = np.arange(start, stop, (stop - start) / num_steps)
+        ecdf_y = ecdf(x, y)
+        ax.plot(x, ecdf_y, color='red')
 
-        ecdf = np.array([np.where(y <= value)[0].shape[0] / x.shape[0] for value in x])
-        ax.plot(x, ecdf, color='red')
-
-        cdf = max(ecdf) * norm.cdf(x, loc=y.mean(), scale=y.std())
-        ax.plot(x, cdf, linestyle='dashed')
+        ax.plot(x, cdf(x, y, scale=max(ecdf_y)), linestyle='dashed')
         ax.set_title(f"eCDF vs CDF of Stock Price Movements for {ticker}, {start_date} - {end_date}")
 
     fig.show()
