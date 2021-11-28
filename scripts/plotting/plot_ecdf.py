@@ -1,9 +1,4 @@
-from argparse import ArgumentParser
-from pathlib import Path
 from matplotlib import pyplot as plt
-from scipy.stats import norm
-import pandas as pd
-import numpy as np
 
 from sidecar.stats.cdf import *
 

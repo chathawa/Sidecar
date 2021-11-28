@@ -1,24 +1,11 @@
 from argparse import ArgumentParser
 from pathlib import Path
 
-from scipy.stats import norm
-import pandas as pd
-import numpy as np
+from sidecar.cdf import CDFDataset, x_steps, ecdf, cdf
+from sidecar.datasets import *
+from sidecar.prices import PricesDataset
 
 
-def x_steps(y: np.ndarray, num_steps: int):
-    start, stop = min(y), max(y)
-    return np.arange(start, stop, (stop - start) / num_steps)
-
-
-def ecdf(x: np.ndarray, y: np.ndarray):
-    return np.array([
-        np.where(y <= value)[0].shape[0] / x.shape[0] for value in x
-    ])
-
-
-def cdf(x: np.ndarray, y: np.ndarray, scale=1.0):
-    return scale * norm.cdf(x, loc=y.mean(), scale=y.std())
 
 
 def main():
